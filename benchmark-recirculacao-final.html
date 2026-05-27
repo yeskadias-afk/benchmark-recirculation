@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benchmark Recirculação — InvestNews</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --nu-purple: #820AD1;
+  --nu-purple-dark: #5E08A0;
+  --nu-purple-light: #EAD5F8;
+  --nu-purple-pale: #F7F0FD;
+  --nu-black: #1A1A1A;
+  --nu-gray-900: #2C2C2A;
+  --nu-gray-600: #5F5E5A;
+  --nu-gray-400: #888780;
+  --nu-gray-200: #B4B2A9;
+  --nu-gray-100: #D3D1C7;
+  --nu-gray-50: #F1EFE8;
+  --nu-white: #FFFFFF;
+  --nu-green: #1D9E75;
+  --nu-green-light: #E1F5EE;
+  --nu-amber: #BA7517;
+  --nu-amber-light: #FAEEDA;
+  --nu-red: #A32D2D;
+  --nu-red-light: #FCEBEB;
+  --nu-blue: #185FA5;
+  --nu-blue-light: #E6F1FB;
+
+  /* players */
+  --investnews: #820AD1;
+  --infomoney: #1D9E75;
+  --exame: #BA7517;
+  --braziljournal: #A32D2D;
+  --valorinveste: #185FA5;
+}
+
+body {
+  font-family: 'Nunito Sans', -apple-system, sans-serif;
+  background: var(--nu-gray-50);
+  color: var(--nu-black);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ── HEADER ── */
+.header {
+  background: var(--nu-purple);
+  padding: 0 48px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  font-size: 20px;
+  color: var(--nu-white);
+  letter-spacing: -0.5px;
+}
+.header-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.65);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* ── HERO ── */
+.hero {
+  background: var(--nu-purple);
+  padding: 48px 48px 52px;
+  color: var(--nu-white);
+}
+.hero-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--nu-purple-light);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.hero h1 {
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  margin-bottom: 14px;
+}
+.hero-sub {
+  font-size: 15px;
+  color: rgba(255,255,255,0.72);
+  max-width: 580px;
+  line-height: 1.7;
+}
+
+/* ── TABS ── */
+.tabs {
+  background: var(--nu-white);
+  padding: 0 48px;
+  border-bottom: 1px solid var(--nu-gray-100);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  position: sticky;
+  top: 64px;
+  z-index: 99;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--nu-gray-600);
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 16px 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s;
+  margin-bottom: -1px;
+}
+.tab-btn:hover { color: var(--nu-purple); }
+.tab-btn.active {
+  color: var(--nu-purple);
+  border-bottom-color: var(--nu-purple);
+}
+
+/* ── MAIN ── */
+.main {
+  padding: 36px 48px 80px;
+  max-width: 1280px;
+}
+
+/* ── SECTION ── */
+.section { display: none; }
+.section.active { display: block; }
+
+.section-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--nu-black);
+  margin-bottom: 4px;
+  letter-spacing: -0.3px;
+}
+.section-desc {
+  font-size: 13.5px;
+  color: var(--nu-gray-600);
+  margin-bottom: 28px;
+}
+
+/* ── GRID ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.mb-28 { margin-bottom: 28px; }
+.mb-36 { margin-bottom: 36px; }
+
+@media (max-width: 1000px) {
+  .grid-5 { grid-template-columns: repeat(3, 1fr); }
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 700px) {
+  .grid-2, .grid-3, .grid-5 { grid-template-columns: 1fr; }
+  .hero, .tabs, .main, .header { padding-left: 20px; padding-right: 20px; }
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--nu-white);
+  border-radius: 16px;
+  padding: 22px 24px;
+  border: 1px solid var(--nu-gray-100);
+}
+
+/* ── METRIC CARD ── */
+.metric-card {
+  background: var(--nu-white);
+  border-radius: 16px;
+  padding: 20px 22px;
+  border: 1px solid var(--nu-gray-100);
+  position: relative;
+  overflow: hidden;
+}
+.metric-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--c, var(--nu-purple));
+  border-radius: 0 0 16px 16px;
+}
+.metric-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--nu-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.metric-value {
+  font-family: 'Nunito', sans-serif;
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--c, var(--nu-purple));
+  margin-bottom: 4px;
+}
+.metric-sub { font-size: 12px; color: var(--nu-gray-400); }
+.metric-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  margin-top: 10px;
+}
+.badge-danger { background: var(--nu-red-light); color: var(--nu-red); }
+.badge-warn { background: var(--nu-amber-light); color: var(--nu-amber); }
+.badge-ok { background: var(--nu-green-light); color: var(--nu-green); }
+
+/* ── ALERT ── */
+.alert {
+  background: var(--nu-purple-pale);
+  border: 1px solid var(--nu-purple-light);
+  border-radius: 14px;
+  padding: 16px 20px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+.alert-icon { color: var(--nu-purple); font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.alert-text { font-size: 13.5px; color: var(--nu-gray-900); line-height: 1.65; }
+.alert-text strong { color: var(--nu-purple); font-weight: 700; }
+
+/* ── BAR ── */
+.bar-group { margin-bottom: 14px; }
+.bar-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px; font-weight: 600; }
+.bar-track { height: 8px; background: var(--nu-gray-100); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; }
+
+/* ── PLAYER SCORECARD ── */
+.scorecard {
+  background: var(--nu-white);
+  border-radius: 16px;
+  border: 1px solid var(--nu-gray-100);
+  overflow: hidden;
+}
+.scorecard-header {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--nu-gray-100);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.player-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.scorecard-header h3 { font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800; flex: 1; }
+.scorecard-header .score { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+.scorecard-body { padding: 18px 22px; }
+.check-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.55; margin-bottom: 11px; }
+.check-item:last-child { margin-bottom: 0; }
+.check-icon {
+  flex-shrink: 0;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; margin-top: 1px;
+}
+.icon-pos { background: var(--nu-green-light); color: var(--nu-green); }
+.icon-neg { background: var(--nu-red-light); color: var(--nu-red); }
+.check-text { color: var(--nu-gray-600); }
+.check-text strong { color: var(--nu-gray-900); font-weight: 700; }
+
+/* ── MATRIX ── */
+.matrix-wrap { background: var(--nu-white); border-radius: 16px; border: 1px solid var(--nu-gray-100); overflow: hidden; }
+.matrix-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 680px; }
+.matrix-table th {
+  text-align: left; padding: 12px 14px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--nu-gray-400); border-bottom: 1px solid var(--nu-gray-100);
+  background: var(--nu-gray-50);
+}
+.matrix-table td { padding: 12px 14px; border-bottom: 1px solid var(--nu-gray-100); vertical-align: middle; }
+.matrix-table tr:last-child td { border-bottom: none; }
+.matrix-table tr:hover td { background: var(--nu-gray-50); }
+.matrix-table .investnews-col { background: var(--nu-purple-pale); border-left: 3px solid var(--nu-purple); }
+.cell-yes { color: var(--nu-green); font-weight: 800; font-size: 16px; }
+.cell-no { color: var(--nu-gray-200); font-size: 16px; }
+.cell-partial { color: var(--nu-amber); font-weight: 800; }
+.feature-name { font-size: 13px; color: var(--nu-gray-900); font-weight: 600; }
+
+/* ── RECOMMENDATIONS ── */
+.rec-card {
+  background: var(--nu-white);
+  border-radius: 16px;
+  border: 1px solid var(--nu-gray-100);
+  padding: 22px 24px;
+}
+.rec-priority {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px;
+  margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+}
+.p-high { color: var(--nu-red); }
+.p-mid { color: var(--nu-amber); }
+.p-low { color: var(--nu-green); }
+.rec-title { font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800; margin-bottom: 8px; line-height: 1.35; color: var(--nu-black); }
+.rec-desc { font-size: 13px; color: var(--nu-gray-600); line-height: 1.65; margin-bottom: 12px; }
+.rec-meta { font-size: 12px; color: var(--nu-gray-400); display: flex; gap: 6px; flex-wrap: wrap; }
+.rec-tag { background: var(--nu-gray-50); border: 1px solid var(--nu-gray-100); border-radius: 20px; padding: 3px 9px; font-size: 11px; font-weight: 600; color: var(--nu-gray-600); }
+
+/* ── PRIORITY SECTION LABEL ── */
+.priority-heading {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 14px; margin-top: 8px;
+}
+.ph-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* ── SCREEN BARS ── */
+.screen-row { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; }
+.screen-name { width: 100px; font-size: 12px; color: var(--nu-gray-600); font-family: monospace; flex-shrink: 0; }
+.screen-track { flex: 1; height: 6px; background: var(--nu-gray-100); border-radius: 3px; overflow: hidden; }
+.screen-fill { height: 100%; border-radius: 3px; }
+.screen-pct { width: 100px; font-size: 12px; color: var(--nu-gray-400); font-weight: 600; }
+
+.divider { height: 1px; background: var(--nu-gray-100); margin: 24px 0; }
+
+/* InvestNews highlight row */
+.in-row {
+  background: var(--nu-purple-pale);
+  border-left: 3px solid var(--nu-purple);
+  border-radius: 8px;
+  padding: 5px 8px 5px 10px;
+  margin-left: -8px;
+  margin-right: -4px;
+  margin-bottom: 14px;
+}
+
+/* ── ANIM ── */
+@keyframes up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.section.active .card,
+.section.active .metric-card,
+.section.active .scorecard,
+.section.active .rec-card,
+.section.active .alert,
+.section.active .matrix-wrap {
+  animation: up 0.3s ease both;
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">InvestNews</div>
+  <div class="header-label">Benchmark · Recirculação · Maio 2026</div>
+</header>
+
+<div class="hero">
+  <div class="hero-eyebrow">Análise competitiva</div>
+  <h1>Por que nossos leitores saem<br>depois de uma página?</h1>
+  <p class="hero-sub">Benchmark de recirculação entre InvestNews, InfoMoney, Exame, BrazilJournal e Valor Investe — para entender o que faz nossa taxa de páginas por visita ser a mais baixa do mercado.</p>
+</div>
+
+<nav class="tabs">
+  <button class="tab-btn active" onclick="showTab('overview', this)">Visão geral</button>
+  <button class="tab-btn" onclick="showTab('players', this)">Por player</button>
+  <button class="tab-btn" onclick="showTab('matrix', this)">Matriz de recursos</button>
+  <button class="tab-btn" onclick="showTab('recs', this)">Recomendações</button>
+  <button class="tab-btn" onclick="showTab('screens', this)">Telas dos usuários</button>
+</nav>
+
+<main class="main">
+
+<!-- ── OVERVIEW ── -->
+<section class="section active" id="overview">
+  <div class="section-title">Visão geral</div>
+  <p class="section-desc">O InvestNews tem a pior taxa de páginas por visita entre todos os concorrentes analisados.</p>
+
+  <div class="alert">
+    <i class="ti ti-alert-circle alert-icon" aria-hidden="true"></i>
+    <div class="alert-text">
+      <strong>Gap crítico:</strong> InvestNews registra <strong>1,51 páginas/visita</strong> — o pior resultado da comparação. O líder InfoMoney alcança 2,08. Isso representa <strong>27% menos recirculação por sessão</strong>, impactando pageviews, tempo de sessão e receita de mídia diretamente.
+    </div>
+  </div>
+
+  <div class="grid-5 mb-28">
+    <div class="metric-card" style="--c: var(--investnews)">
+      <div class="metric-label">InvestNews</div>
+      <div class="metric-value">1,51</div>
+      <div class="metric-sub">páginas / visita</div>
+      <div class="metric-badge badge-danger"><i class="ti ti-arrow-down" style="font-size:11px"></i> Último lugar</div>
+    </div>
+    <div class="metric-card" style="--c: var(--valorinveste)">
+      <div class="metric-label">Valor Investe</div>
+      <div class="metric-value">1,69</div>
+      <div class="metric-sub">páginas / visita</div>
+      <div class="metric-badge badge-warn">+12% vs IN</div>
+    </div>
+    <div class="metric-card" style="--c: var(--braziljournal)">
+      <div class="metric-label">BrazilJournal</div>
+      <div class="metric-value">1,60</div>
+      <div class="metric-sub">páginas / visita</div>
+      <div class="metric-badge badge-warn">+6% vs IN</div>
+    </div>
+    <div class="metric-card" style="--c: var(--exame)">
+      <div class="metric-label">Exame</div>
+      <div class="metric-value">1,67</div>
+      <div class="metric-sub">páginas / visita</div>
+      <div class="metric-badge badge-warn">+11% vs IN</div>
+    </div>
+    <div class="metric-card" style="--c: var(--infomoney)">
+      <div class="metric-label">InfoMoney</div>
+      <div class="metric-value">2,08</div>
+      <div class="metric-sub">páginas / visita</div>
+      <div class="metric-badge badge-ok"><i class="ti ti-trophy" style="font-size:11px"></i> Melhor</div>
+    </div>
+  </div>
+
+  <div class="grid-2 mb-28">
+    <div class="card">
+      <div class="metric-label" style="margin-bottom:18px">Páginas por visita</div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--infomoney)">InfoMoney</span><span>2,08</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--infomoney)"></div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--valorinveste)">Valor Investe</span><span>1,69</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:81%;background:var(--valorinveste)"></div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--exame)">Exame</span><span>1,67</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:80%;background:var(--exame)"></div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--braziljournal)">BrazilJournal</span><span>1,60</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:77%;background:var(--braziljournal)"></div></div>
+      </div>
+      <div class="bar-group in-row">
+        <div class="bar-label"><span style="color:var(--investnews);font-weight:800">InvestNews ←</span><span style="color:var(--nu-red)">1,51</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:73%;background:var(--investnews)"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="metric-label" style="margin-bottom:18px">Bounce rate (menor = melhor)</div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--infomoney)">InfoMoney</span><span style="color:var(--nu-green)">45,61%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:45%;background:var(--infomoney)"></div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--exame)">Exame</span><span>53,58%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:54%;background:var(--exame)"></div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--braziljournal)">BrazilJournal</span><span>57,19%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:57%;background:var(--braziljournal)"></div></div>
+      </div>
+      <div class="bar-group in-row">
+        <div class="bar-label"><span style="color:var(--investnews);font-weight:800">InvestNews ←</span><span style="color:var(--nu-red)">66,18%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:66%;background:var(--investnews)"></div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--valorinveste)">Valor Investe</span><span style="color:var(--nu-red)">73,21%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:73%;background:var(--valorinveste)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="metric-label" style="margin-bottom:18px">Tempo de visita</div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--infomoney)">InfoMoney</span><span style="color:var(--nu-green)">2:22</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--infomoney)"></div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--valorinveste)">Valor Investe</span><span>2:00</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:84%;background:var(--valorinveste)"></div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--braziljournal)">BrazilJournal</span><span>1:36</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:68%;background:var(--braziljournal)"></div></div>
+      </div>
+      <div class="bar-group in-row">
+        <div class="bar-label"><span style="color:var(--investnews);font-weight:800">InvestNews</span><span>1:24</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:59%;background:var(--investnews)"></div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--exame)">Exame</span><span style="color:var(--nu-red)">0:50</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:35%;background:var(--exame)"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="metric-label" style="margin-bottom:18px">Visitas mensais</div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--infomoney)">InfoMoney</span><span>21,67M</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--infomoney)"></div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--exame)">Exame</span><span>11,15M</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:51%;background:var(--exame)"></div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--valorinveste)">Valor Investe</span><span>2,18M</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:10%;background:var(--valorinveste)"></div></div>
+      </div>
+      <div class="bar-group in-row">
+        <div class="bar-label"><span style="color:var(--investnews);font-weight:800">InvestNews</span><span>1,14M</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:5.3%;background:var(--investnews)"></div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--braziljournal)">BrazilJournal</span><span>1,08M</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:5%;background:var(--braziljournal)"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="metric-label" style="margin-bottom:18px">Pageviews mensais</div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--infomoney)">InfoMoney</span><span>45,10M</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--infomoney)"></div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--exame)">Exame</span><span>18,67M</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:41%;background:var(--exame)"></div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--valorinveste)">Valor Investe</span><span>3,68M</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:8%;background:var(--valorinveste)"></div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span style="color:var(--braziljournal)">BrazilJournal</span><span>1,73M</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:3.8%;background:var(--braziljournal)"></div></div>
+      </div>
+      <div class="bar-group in-row">
+        <div class="bar-label"><span style="color:var(--investnews);font-weight:800">InvestNews</span><span>1,72M</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:3.8%;background:var(--investnews)"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PLAYERS ── -->
+<section class="section" id="players">
+  <div class="section-title">Análise por player</div>
+  <p class="section-desc">O que cada concorrente faz bem (e mal) em recirculação, com base nas screenshots desktop e mobile.</p>
+
+  <div class="grid-2 mb-28">
+    <div class="scorecard">
+      <div class="scorecard-header">
+        <div class="player-dot" style="background:var(--investnews)"></div>
+        <h3>InvestNews</h3>
+        <span class="score" style="background:var(--nu-red-light);color:var(--nu-red)">1,51 p/v</span>
+      </div>
+      <div class="scorecard-body">
+        <div class="check-item"><div class="check-icon icon-neg">✕</div><div class="check-text"><strong>Sem box de "Leia também" automático.</strong> Não há bloco de conteúdo relacionado inserido automaticamente entre os parágrafos — principal causa da baixa recirculação.</div></div>
+        <div class="check-item"><div class="check-icon icon-neg">✕</div><div class="check-text"><strong>Breadcrumb existe, mas pouco efetivo.</strong> O elemento está presente, porém com aparência estática e sem sinalização visual de clicabilidade — o leitor dificilmente percebe que é navegável.</div></div>
+        <div class="check-item"><div class="check-icon icon-neg">✕</div><div class="check-text"><strong>Sem sidebar de "Mais lidas".</strong> Desktop desperdiça o espaço lateral — o principal vetor de recirculação passiva.</div></div>
+        <div class="check-item"><div class="check-icon icon-neg">✕</div><div class="check-text"><strong>Grid de relacionados genérico ao final.</strong> Zona de baixa atenção — maioria dos leitores já abandonou antes de chegar lá.</div></div>
+      </div>
+    </div>
+
+    <div class="scorecard">
+      <div class="scorecard-header">
+        <div class="player-dot" style="background:var(--infomoney)"></div>
+        <h3>InfoMoney</h3>
+        <span class="score" style="background:var(--nu-green-light);color:var(--nu-green)">2,08 p/v 🏆</span>
+      </div>
+      <div class="scorecard-body">
+        <div class="check-item"><div class="check-icon icon-pos">✓</div><div class="check-text"><strong>Breadcrumb navegável.</strong> Orienta o leitor e oferece atalho direto para a editoria.</div></div>
+        <div class="check-item"><div class="check-icon icon-pos">✓</div><div class="check-text"><strong>"Leia também" com foto + título inserido no texto.</strong> Formato visual aumenta o CTR em relação a listas textuais.</div></div>
+        <div class="check-item"><div class="check-icon icon-pos">✓</div><div class="check-text"><strong>CTA automático de aquisição após o 3º parágrafo.</strong> Aproveita o pico de engajamento para ofertas de conversão (assinaturas, produtos), não conteúdo editorial.</div></div>
+        <div class="check-item"><div class="check-icon icon-pos">✓</div><div class="check-text"><strong>Ticker de ações em tempo real.</strong> Mantém o leitor engajado com dados ao vivo, incentivando permanência.</div></div>
+        <div class="check-item"><div class="check-icon icon-neg">✕</div><div class="check-text"><strong>"Leia também" com título + linha fina.</strong> Excesso de texto desacelera o escaneamento; thumbnail + título curto é mais eficaz.</div></div>
+      </div>
+    </div>
+
+    <div class="scorecard">
+      <div class="scorecard-header">
+        <div class="player-dot" style="background:var(--exame)"></div>
+        <h3>Exame</h3>
+        <span class="score" style="background:var(--nu-amber-light);color:var(--nu-amber)">1,67 p/v</span>
+      </div>
+      <div class="scorecard-body">
+        <div class="check-item"><div class="check-icon icon-pos">✓</div><div class="check-text"><strong>Breadcrumb + box "Mais lidas" na lateral.</strong> Duplo vetor de recirculação — hierarquia editorial + prova social.</div></div>
+        <div class="check-item"><div class="check-icon icon-pos">✓</div><div class="check-text"><strong>"Veja também" após o 2º parágrafo.</strong> Intervenção cedo no texto, quando a atenção ainda está no topo.</div></div>
+        <div class="check-item"><div class="check-icon icon-pos">✓</div><div class="check-text"><strong>Tag antes do lide.</strong> Contextualiza e serve como vetor de clique para explorar tópicos relacionados.</div></div>
+        <div class="check-item"><div class="check-icon icon-pos">✓</div><div class="check-text"><strong>CTA "Seguir no Google" após 3º parágrafo.</strong> Captura audiência fiel no pico de interesse da sessão.</div></div>
+        <div class="check-item"><div class="check-icon icon-neg">✕</div><div class="check-text"><strong>Excesso de publicidade.</strong> Ads agressivos interrompem o fluxo e competem com CTAs editoriais, reduzindo cliques em conteúdo.</div></div>
+      </div>
+    </div>
+
+    <div class="scorecard">
+      <div class="scorecard-header">
+        <div class="player-dot" style="background:var(--braziljournal)"></div>
+        <h3>BrazilJournal</h3>
+        <span class="score" style="background:var(--nu-red-light);color:var(--nu-red)">1,60 p/v</span>
+      </div>
+      <div class="scorecard-body">
+        <div class="check-item"><div class="check-icon icon-pos">✓</div><div class="check-text"><strong>Box de newsletter no topo.</strong> Captura inscritos antes da leitura — posição de altíssima visibilidade.</div></div>
+        <div class="check-item"><div class="check-icon icon-pos">✓</div><div class="check-text"><strong>"Leia mais" sticky que acompanha o scroll.</strong> Relacionados disponíveis a qualquer ponto da leitura, sem precisar rolar.</div></div>
+        <div class="check-item"><div class="check-icon icon-pos">✓</div><div class="check-text"><strong>Design focado, sem publicidade agressiva.</strong> Leitor mantém foco no conteúdo, aumentando tempo de leitura.</div></div>
+        <div class="check-item"><div class="check-icon icon-neg">✕</div><div class="check-text"><strong>Banner "breaking" ao final.</strong> Zona de baixíssima retenção — a maioria dos leitores já saiu antes de chegar.</div></div>
+        <div class="check-item"><div class="check-icon icon-neg">✕</div><div class="check-text"><strong>Sem breadcrumb explícito.</strong> Dificulta navegação por seção para quem entrou pelo Google.</div></div>
+      </div>
+    </div>
+
+    <div class="scorecard">
+      <div class="scorecard-header">
+        <div class="player-dot" style="background:var(--valorinveste)"></div>
+        <h3>Valor Investe</h3>
+        <span class="score" style="background:var(--nu-blue-light);color:var(--nu-blue)">1,69 p/v</span>
+      </div>
+      <div class="scorecard-body">
+        <div class="check-item"><div class="check-icon icon-pos">✓</div><div class="check-text"><strong>Blocos "Mais lidas" e "Últimas" na lateral.</strong> Múltiplos vetores de recirculação passiva sem interferir no texto.</div></div>
+        <div class="check-item"><div class="check-icon icon-pos">✓</div><div class="check-text"><strong>Navegação temática robusta no header.</strong> Categorias claras incentivam exploração ao terminar o artigo.</div></div>
+        <div class="check-item"><div class="check-icon icon-pos">✓</div><div class="check-text"><strong>Tempo de visita de 2:00 — segundo melhor.</strong> Conteúdo em profundidade mantém o leitor engajado por mais tempo.</div></div>
+        <div class="check-item"><div class="check-icon icon-neg">✕</div><div class="check-text"><strong>Bounce rate de 73,21% — o pior da comparação.</strong> Alto tempo de visita mas baixa navegação entre artigos.</div></div>
+        <div class="check-item"><div class="check-icon icon-neg">✕</div><div class="check-text"><strong>Mobile fragmentado com excesso de banners.</strong> Experiência de recirculação se perde entre blocos publicitários.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MATRIX ── -->
+<section class="section" id="matrix">
+  <div class="section-title">Matriz de recursos</div>
+  <p class="section-desc">Quais elementos de recirculação cada player implementa. ✓ presente · ~ parcial · — ausente</p>
+
+  <div class="matrix-wrap" style="overflow-x:auto">
+    <table class="matrix-table">
+      <thead>
+        <tr>
+          <th style="min-width:200px">Recurso</th>
+          <th style="color:var(--nu-purple);background:var(--nu-purple-pale);border-left:3px solid var(--nu-purple)">InvestNews</th>
+          <th style="color:var(--infomoney)">InfoMoney</th>
+          <th style="color:var(--exame)">Exame</th>
+          <th style="color:var(--braziljournal)">BrazilJournal</th>
+          <th style="color:var(--valorinveste)">Valor Investe</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="feature-name">Breadcrumb navegável</td><td class="investnews-col"><span class="cell-no">—</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-no">—</span></td><td><span class="cell-partial">~</span></td></tr>
+        <tr><td class="feature-name">"Leia também" automático no texto</td><td class="investnews-col"><span class="cell-no">—</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-partial">~</span></td></tr>
+        <tr><td class="feature-name">CTA automático após 2–3 parágrafos</td><td class="investnews-col"><span class="cell-no">—</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-no">—</span></td><td><span class="cell-no">—</span></td></tr>
+        <tr><td class="feature-name">Tags antes do lide</td><td class="investnews-col"><span class="cell-no">—</span></td><td><span class="cell-partial">~</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-no">—</span></td><td><span class="cell-partial">~</span></td></tr>
+        <tr><td class="feature-name">Box "Mais lidas" na lateral</td><td class="investnews-col"><span class="cell-no">—</span></td><td><span class="cell-no">—</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-no">—</span></td><td><span class="cell-yes">✓</span></td></tr>
+        <tr><td class="feature-name">Newsletter no corpo da matéria</td><td class="investnews-col"><span class="cell-partial">~</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-partial">~</span></td></tr>
+        <tr><td class="feature-name">Relacionados com thumbnail + título</td><td class="investnews-col"><span class="cell-partial">~</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-no">—</span></td><td><span class="cell-yes">✓</span></td></tr>
+        <tr><td class="feature-name">Sidebar sticky de relacionados</td><td class="investnews-col"><span class="cell-no">—</span></td><td><span class="cell-no">—</span></td><td><span class="cell-no">—</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-partial">~</span></td></tr>
+        <tr><td class="feature-name">Navegação por autor</td><td class="investnews-col"><span class="cell-partial">~</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-partial">~</span></td></tr>
+        <tr><td class="feature-name">Dados financeiros em tempo real</td><td class="investnews-col"><span class="cell-no">—</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-no">—</span></td><td><span class="cell-no">—</span></td><td><span class="cell-partial">~</span></td></tr>
+        <tr><td class="feature-name">Botão "Próxima matéria"</td><td class="investnews-col"><span class="cell-no">—</span></td><td><span class="cell-no">—</span></td><td><span class="cell-partial">~</span></td><td><span class="cell-no">—</span></td><td><span class="cell-no">—</span></td></tr>
+        <tr><td class="feature-name">Grid de relacionados ao final</td><td class="investnews-col"><span class="cell-yes">✓</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-yes">✓</span></td><td><span class="cell-partial">~</span></td><td><span class="cell-yes">✓</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── RECS ── -->
+<section class="section" id="recs">
+  <div class="section-title">Recomendações</div>
+  <p class="section-desc">Ações priorizadas por impacto esperado em páginas por visita e bounce rate.</p>
+
+  <div class="priority-heading"><div class="ph-dot" style="background:var(--nu-red)"></div><span style="color:var(--nu-red)">Alta prioridade — impacto imediato</span></div>
+  <div class="grid-2 mb-28">
+    <div class="rec-card">
+      <div class="rec-priority p-high"><i class="ti ti-circle-filled" style="font-size:8px"></i> Alta prioridade</div>
+      <div class="rec-title">"Leia também" automático após o 2º e 3º parágrafo</div>
+      <div class="rec-desc">É o principal gap do InvestNews. Inserir blocos de artigos relacionados automaticamente dentro do texto — acionados por tag ou editoria — é o fator mais direto de recirculação. No mobile, o formato card (thumbnail pequena + título) é o mais efetivo.</div>
+      <div class="rec-meta"><span class="rec-tag">↑ Páginas/visita</span><span class="rec-tag">↓ Bounce rate</span><span class="rec-tag">Ref: InfoMoney, Exame</span></div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-priority p-high"><i class="ti ti-circle-filled" style="font-size:8px"></i> Alta prioridade</div>
+      <div class="rec-title">Breadcrumb navegável no topo da matéria</div>
+      <div class="rec-desc">Recurso simples, alto retorno. Orienta quem entrou pelo Google, mostra a hierarquia editorial e oferece clique direto para a editoria. Formato: Home › Mercados › Ações. Posicionar logo abaixo do header e acima do título.</div>
+      <div class="rec-meta"><span class="rec-tag">↑ Páginas/visita</span><span class="rec-tag">SEO interno</span><span class="rec-tag">Ref: InfoMoney, Exame</span></div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-priority p-high"><i class="ti ti-circle-filled" style="font-size:8px"></i> Alta prioridade</div>
+      <div class="rec-title">Tags clicáveis posicionadas antes do lide</div>
+      <div class="rec-desc">Tags no topo da matéria fazem duas coisas ao mesmo tempo: contextualizam o assunto e servem como atalho para todas as matérias do tema. É um dos recursos mais baratos de implementar com retorno direto em pageviews de segundo nível.</div>
+      <div class="rec-meta"><span class="rec-tag">↑ Páginas/visita</span><span class="rec-tag">Custo mínimo</span><span class="rec-tag">Ref: Exame</span></div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-priority p-high"><i class="ti ti-circle-filled" style="font-size:8px"></i> Alta prioridade</div>
+      <div class="rec-title">Box "Mais lidas" no sidebar do desktop</div>
+      <div class="rec-desc">O sidebar de desktop é um espaço de alto valor completamente ocioso para recirculação. Um box sticky com 4–5 matérias de destaque permanece visível enquanto o leitor consome o texto — funciona como convite contínuo e prova social.</div>
+      <div class="rec-meta"><span class="rec-tag">↑ Páginas/visita desktop</span><span class="rec-tag">Prova social</span><span class="rec-tag">Ref: Exame, Valor Investe</span></div>
+    </div>
+  </div>
+
+  <div class="priority-heading"><div class="ph-dot" style="background:var(--nu-amber)"></div><span style="color:var(--nu-amber)">Média prioridade — melhorias estruturais</span></div>
+  <div class="grid-2 mb-28">
+    <div class="rec-card">
+      <div class="rec-priority p-mid"><i class="ti ti-circle-filled" style="font-size:8px"></i> Média prioridade</div>
+      <div class="rec-title">Newsletter inline com melhor posicionamento</div>
+      <div class="rec-desc">O box de newsletter já existe, mas está mal posicionado. Inspirado no BrazilJournal, um box simples (campo de e-mail + botão) após o 4º parágrafo — quando o leitor já se engajou — aumenta significativamente a captação e a recorrência de visitas.</div>
+      <div class="rec-meta"><span class="rec-tag">Retenção de audiência</span><span class="rec-tag">Recorrência</span><span class="rec-tag">Ref: BrazilJournal</span></div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-priority p-mid"><i class="ti ti-circle-filled" style="font-size:8px"></i> Média prioridade</div>
+      <div class="rec-title">Sidebar sticky de relacionados no desktop</div>
+      <div class="rec-desc">Uma coluna lateral com 3–5 matérias relacionadas que acompanha o scroll — como no BrazilJournal — mantém opções de recirculação visíveis em qualquer ponto da leitura, sem interromper o fluxo de texto. Alto impacto para o desktop, que concentra usuários mais qualificados.</div>
+      <div class="rec-meta"><span class="rec-tag">↑ CTR desktop</span><span class="rec-tag">Ref: BrazilJournal</span></div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-priority p-mid"><i class="ti ti-circle-filled" style="font-size:8px"></i> Média prioridade</div>
+      <div class="rec-title">Botão "Próxima matéria" ao final do artigo</div>
+      <div class="rec-desc">Quando o leitor termina um artigo, está no estado máximo de receptividade. Um botão grande e direto "Próxima matéria: [título]" elimina a fricção de escolha e conduz para a segunda página da sessão sem demandar navegação. É o equivalente editorial do autoplay.</div>
+      <div class="rec-meta"><span class="rec-tag">↑ Sequência de leitura</span><span class="rec-tag">Reduz fricção</span></div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-priority p-mid"><i class="ti ti-circle-filled" style="font-size:8px"></i> Média prioridade</div>
+      <div class="rec-title">Grid de relacionados com thumbnails maiores</div>
+      <div class="rec-desc">O grid já existe, mas precisa de thumbnails maiores e títulos mais curtos. Cards visuais (imagem + título em 2 linhas) geram CTR 2–3× maior do que listas textuais. Limitar para 3–4 cards melhora a taxa de clique por item em relação a grids com 6+.</div>
+      <div class="rec-meta"><span class="rec-tag">↑ CTR relacionados</span><span class="rec-tag">Ref: InfoMoney, Valor Investe</span></div>
+    </div>
+  </div>
+
+  <div class="priority-heading"><div class="ph-dot" style="background:var(--nu-green)"></div><span style="color:var(--nu-green)">Baixa prioridade — longo prazo</span></div>
+  <div class="grid-2">
+    <div class="rec-card">
+      <div class="rec-priority p-low"><i class="ti ti-circle-filled" style="font-size:8px"></i> Baixa prioridade</div>
+      <div class="rec-title">Seção "Mais de [autor]" abaixo da bio</div>
+      <div class="rec-desc">Uma lista de artigos recentes do mesmo jornalista, logo após a bio, incentiva leitores que se identificaram com o estilo editorial a explorar mais conteúdo. Constrói autoridade individual e fidelidade de audiência ao longo do tempo.</div>
+      <div class="rec-meta"><span class="rec-tag">Fidelidade</span><span class="rec-tag">Autoridade editorial</span><span class="rec-tag">Ref: InfoMoney</span></div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-priority p-low"><i class="ti ti-circle-filled" style="font-size:8px"></i> Baixa prioridade</div>
+      <div class="rec-title">Mini-ticker do ativo mencionado na matéria</div>
+      <div class="rec-desc">Exibir a performance em tempo real do ativo citado diretamente na matéria — como faz o InfoMoney — é um recurso de alto valor percebido para o leitor investidor. Demanda infraestrutura de dados em tempo real; avaliar viabilidade antes de priorizar.</div>
+      <div class="rec-meta"><span class="rec-tag">Engajamento qualificado</span><span class="rec-tag">Ref: InfoMoney</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SCREENS ── -->
+<section class="section" id="screens">
+  <div class="section-title">Dimensões de tela dos usuários</div>
+  <p class="section-desc">Priorize a experiência de recirculação nestas resoluções para ter o maior impacto.</p>
+
+  <div class="grid-2 mb-28">
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px">
+        <i class="ti ti-device-mobile" style="font-size:18px;color:var(--nu-purple)" aria-hidden="true"></i>
+        <div class="metric-label" style="margin:0">Mobile — top resoluções</div>
+      </div>
+      <div class="screen-row"><div class="screen-name">390 × 844</div><div class="screen-track"><div class="screen-fill" style="width:100%;background:var(--nu-purple)"></div></div><div class="screen-pct">iPhone 14/15</div></div>
+      <div class="screen-row"><div class="screen-name">375 × 812</div><div class="screen-track"><div class="screen-fill" style="width:85%;background:var(--nu-purple)"></div></div><div class="screen-pct">iPhone X/11</div></div>
+      <div class="screen-row"><div class="screen-name">414 × 896</div><div class="screen-track"><div class="screen-fill" style="width:72%;background:var(--nu-purple)"></div></div><div class="screen-pct">iPhone XR/11</div></div>
+      <div class="screen-row"><div class="screen-name">393 × 852</div><div class="screen-track"><div class="screen-fill" style="width:65%;background:var(--nu-purple)"></div></div><div class="screen-pct">iPhone 15 Pro</div></div>
+      <div class="screen-row"><div class="screen-name">360 × 800</div><div class="screen-track"><div class="screen-fill" style="width:48%;background:var(--nu-purple)"></div></div><div class="screen-pct">Android top</div></div>
+      <div class="divider"></div>
+      <p style="font-size:13px;color:var(--nu-gray-600);line-height:1.6">
+        Viewport de 375–414px domina o mobile. CTAs inline devem ter altura mínima de 44px, cards de relacionados devem caber em coluna única, e thumbnails de "Leia também" precisam de no mínimo 80px de altura para gerar clique no touch.
+      </p>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px">
+        <i class="ti ti-device-desktop" style="font-size:18px;color:var(--nu-purple)" aria-hidden="true"></i>
+        <div class="metric-label" style="margin:0">Desktop — top resoluções</div>
+      </div>
+      <div class="screen-row"><div class="screen-name">1920 × 1080</div><div class="screen-track"><div class="screen-fill" style="width:100%;background:var(--nu-gray-400)"></div></div><div class="screen-pct">Full HD</div></div>
+      <div class="screen-row"><div class="screen-name">1440 × 900</div><div class="screen-track"><div class="screen-fill" style="width:78%;background:var(--nu-gray-400)"></div></div><div class="screen-pct">MacBook 14"</div></div>
+      <div class="screen-row"><div class="screen-name">1366 × 768</div><div class="screen-track"><div class="screen-fill" style="width:65%;background:var(--nu-gray-400)"></div></div><div class="screen-pct">Laptop comum</div></div>
+      <div class="screen-row"><div class="screen-name">1280 × 800</div><div class="screen-track"><div class="screen-fill" style="width:55%;background:var(--nu-gray-400)"></div></div><div class="screen-pct">MacBook Air</div></div>
+      <div class="screen-row"><div class="screen-name">2560 × 1440</div><div class="screen-track"><div class="screen-fill" style="width:38%;background:var(--nu-gray-400)"></div></div><div class="screen-pct">2K / iMac</div></div>
+      <div class="divider"></div>
+      <p style="font-size:13px;color:var(--nu-gray-600);line-height:1.6">
+        No 1920px, o sidebar tem espaço confortável para "Mais lidas" sticky. Em 1366px (mais crítico), o sidebar deve ter no mínimo 280px para cards com thumbnail. Evitar layouts que colapsam o sidebar abaixo de 1200px.
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="metric-label" style="margin-bottom:18px">Distribuição estimada por dispositivo</div>
+    <div class="grid-2">
+      <div>
+        <div class="bar-group in-row">
+          <div class="bar-label"><span>Mobile</span><span style="color:var(--nu-purple)">~62%</span></div>
+          <div class="bar-track" style="height:12px"><div class="bar-fill" style="width:62%;background:var(--nu-purple)"></div></div>
+        </div>
+        <div class="bar-group">
+          <div class="bar-label"><span>Desktop</span><span style="color:var(--nu-gray-600)">~36%</span></div>
+          <div class="bar-track" style="height:12px"><div class="bar-fill" style="width:36%;background:var(--nu-gray-400)"></div></div>
+        </div>
+        <div class="bar-group">
+          <div class="bar-label"><span>Tablet</span><span style="color:var(--nu-gray-400)">~2%</span></div>
+          <div class="bar-track" style="height:12px"><div class="bar-fill" style="width:2%;background:var(--nu-gray-200)"></div></div>
+        </div>
+      </div>
+      <div style="font-size:13px;color:var(--nu-gray-600);line-height:1.7">
+        <p><strong style="color:var(--nu-black)">Foco principal: mobile.</strong> Com mais de 60% do tráfego em mobile, as melhorias de recirculação mobile têm o maior impacto absoluto em páginas por visita.</p>
+        <br>
+        <p><strong style="color:var(--nu-black)">Desktop = audiência qualificada.</strong> Apesar do menor volume, usuários desktop têm maior tempo de sessão. O sidebar e a coluna sticky valem esse investimento.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+function showTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
